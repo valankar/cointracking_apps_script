@@ -1,4 +1,10 @@
 function coinTracking() {
+  var lock = LockService.getDocumentLock();
+  lock.waitLock(5000);
+  if (!lock.hasLock()) {
+    Logger.log('Could not obtain lock after 5 seconds.');
+    return null;
+  }
   const url = "https://cointracking.info/api/v1/";
   const cacheId = "CointrackingApiCache_XXX";
   const cacheDuration = 60 * 60;
@@ -13,8 +19,7 @@ function coinTracking() {
     Logger.log("Using cached: " + response)
   }
   if (response == null) {
-    var date = new Date();
-    var nonce = Math.floor((date.getTime()/100)).toString();
+    var nonce = Math.floor(Date.now()/100).toString();
     var encodedParams = "nonce=" + nonce + "&method=" + method;
     var byteSignature = Utilities.computeHmacSignature(
       Utilities.MacAlgorithm.HMAC_SHA_512,
@@ -35,8 +40,11 @@ function coinTracking() {
     };
     response = UrlFetchApp.fetch(url, options).getContentText();
     Logger.log("Fetched URL: " + response);
-    cache.put(cacheId, response, cacheDuration);
+    if (JSON.parse(response).success) {
+      cache.put(cacheId, response, cacheDuration);
+    }
   }
+  lock.releaseLock()
   return JSON.parse(response).gains
 }
 
