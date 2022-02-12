@@ -1,10 +1,10 @@
 function coinTracking() {
-  var lock = LockService.getDocumentLock();
-  lock.waitLock(5000);
-  if (!lock.hasLock()) {
-    Logger.log('Could not obtain lock after 5 seconds.');
-    return null;
-  }
+  // Sleep random between 1 and 5 seconds to avoid being called many times at once.
+  const minWait = 1000;
+  const maxWait = 5000;
+  const waitTime = Math.floor(Math.random() * (maxWait - minWait + 1) ) + minWait;
+  Utilities.sleep(waitTime);
+
   const url = "https://cointracking.info/api/v1/";
   const cacheId = "CointrackingApiCache_XXX";
   const cacheDuration = 60 * 60;
@@ -44,7 +44,6 @@ function coinTracking() {
       cache.put(cacheId, response, cacheDuration);
     }
   }
-  lock.releaseLock()
   return JSON.parse(response).gains
 }
 
