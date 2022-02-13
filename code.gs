@@ -7,13 +7,12 @@ function coinTrackingGains() {
   const secret = "COINTRACKING_SECRET";
   var response;
 
-  let cache = CacheService.getDocumentCache();
+  var cache = CacheService.getDocumentCache();
   var response = cache.get(cacheId);
   if (response != null) {
     Logger.log("Using cached: " + response)
-  }
-  if (response == null) {
-    var nonce = Math.floor(Date.now()/100).toString();
+  } else {
+    var nonce = Math.floor(Date.now() / 100).toString();
     var encodedParams = "nonce=" + nonce + "&method=" + method;
     var byteSignature = Utilities.computeHmacSignature(
       Utilities.MacAlgorithm.HMAC_SHA_512,
@@ -33,12 +32,10 @@ function coinTrackingGains() {
       }
     };
     response = UrlFetchApp.fetch(url, options).getContentText();
+    cache.put(cacheId, response, cacheDuration);
     Logger.log("Fetched URL: " + response);
-    if (JSON.parse(response).success) {
-      cache.put(cacheId, response, cacheDuration);
-    }
   }
-  return JSON.parse(response).gains
+  return JSON.parse(response).gains;
 }
 
 function getGains() {
