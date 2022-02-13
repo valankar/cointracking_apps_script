@@ -1,10 +1,4 @@
-function coinTracking() {
-  // Sleep random between 1 and 5 seconds to avoid being called many times at once.
-  const minWait = 1000;
-  const maxWait = 5000;
-  const waitTime = Math.floor(Math.random() * (maxWait - minWait + 1) ) + minWait;
-  Utilities.sleep(waitTime);
-
+function coinTrackingGains() {
   const url = "https://cointracking.info/api/v1/";
   const cacheId = "CointrackingApiCache_XXX";
   const cacheDuration = 60 * 60;
@@ -47,32 +41,10 @@ function coinTracking() {
   return JSON.parse(response).gains
 }
 
-function getXAUAmount() {
-  var data = coinTracking();
-  return parseFloat(data["XAU"]["amount"]);
-}
-
-function getXAUCost() {
-  var data = coinTracking();
-  return parseFloat(data["XAU"]["cost"]);
-}
-
-function getXAUValue() {
-  var data = coinTracking();
-  return parseFloat(data["XAU"]["current_value"]);
-}
-
-function getXAGAmount() {
-  var data = coinTracking();
-  return parseFloat(data["XAG"]["amount"]);
-}
-
-function getXAGCost() {
-  var data = coinTracking();
-  return parseFloat(data["XAG"]["cost"]);
-}
-
-function getXAGValue() {
-  var data = coinTracking();
-  return parseFloat(data["XAG"]["current_value"]);
+function getGains() {
+  var gains = coinTrackingGains();
+  return [
+    ["Gold", parseFloat(gains["XAU"]["amount"]), parseFloat(gains["XAU"]["current_value"]), parseFloat(gains["XAU"]["cost"])], 
+    ["Silver", parseFloat(gains["XAG"]["amount"]), parseFloat(gains["XAG"]["current_value"]), parseFloat(gains["XAG"]["cost"])], 
+  ];
 }
