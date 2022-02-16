@@ -35,6 +35,7 @@ function coinTrackingGains() {
     cache.put(cacheId, response, cacheDuration);
     Logger.log("Fetched URL: " + response);
   }
+  Utilities.sleep(1000);
   return JSON.parse(response).gains;
 }
 
